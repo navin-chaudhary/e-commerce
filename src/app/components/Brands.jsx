@@ -52,8 +52,10 @@ const PopularBrands = () => {
                 key={brand.id}
                 className="inline-flex flex-col items-center justify-center min-w-[200px] h-36"
               >
-                <img
+                <Image
                   src={brand.logo}
+                  height={1000}
+                  width={1000}
                   alt={`${brand.name} logo`}
                   className="h-24 w-24 object-contain filter grayscale hover:grayscale-0 transition-all duration-300"
                 />

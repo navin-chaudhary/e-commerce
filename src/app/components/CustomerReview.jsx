@@ -2,6 +2,7 @@
 
 import React, { useState, useRef } from 'react';
 import { ChevronLeft, ChevronRight } from 'lucide-react';
+import Image from 'next/image';
 
 const CustomerReviews = () => {
   const [activeSlide, setActiveSlide] = useState(0);
@@ -87,9 +88,11 @@ const CustomerReviews = () => {
     
     <div className="min-w-[300px] p-6 bg-white rounded-lg shadow-sm border border-gray-100 transform transition-all duration-300 hover:scale-105">
       <div className="flex items-center gap-4 mb-4">
-        <img 
+        <Image
           src={review.image} 
           alt={review.name} 
+          height={1000}
+          width={1000}
           className="w-12 h-12 rounded-full object-cover"
         />
         <div>

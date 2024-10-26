@@ -1,6 +1,7 @@
 "use client";
 import React, { useState } from 'react';
 import { ChevronLeft, ChevronRight } from 'lucide-react';
+import Image from 'next/image';
 
 const ProductCarousel = () => {
   const [currentImageIndex, setCurrentImageIndex] = useState(0);
@@ -57,10 +58,12 @@ const ProductCarousel = () => {
                     className={`absolute w-full h-full transition-opacity duration-500 ease-in-out
                       ${currentImageIndex === index ? 'opacity-1' : 'opacity-0'}`}
                   >
-                    <img
+                    <Image
                       src={img}
                       alt={`Product ${index + 1}`}
                       className="w-full h-full   object-cover"
+                      height={1000}
+                      width={1000}
                     />
                   </div>
                 ))}
