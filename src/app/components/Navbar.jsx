@@ -3,11 +3,15 @@ import React, { useState } from "react";
 import Link from "next/link";
 import { Menu, X, ShoppingCart, Search, User, ChevronDown } from "lucide-react";
 import Image from "next/image";
+import { useCart } from "../context/CartContext";
 
 const Navbar = () => {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const [isCategoryOpen, setIsCategoryOpen] = useState(false);
+  const { cartItems } = useCart(); 
 
+  const cartItemCount =  cartItems?.reduce((total, item) => total + (item.quantity || 1), 0) || 0;
+  
   const toggleMenu = () => {
     setIsMenuOpen(!isMenuOpen);
   };
@@ -51,13 +55,12 @@ const Navbar = () => {
               </span>
             </Link>
           </div>
+          
           {/* Desktop Navigation */}
           <div className="hidden md:flex items-center space-x-8">
             <Link href="/" className="text-gray-600 hover:text-gray-900">
               Home
             </Link>
-
-            {/* Categories Dropdown */}
             <div className="relative group">
               <button
                 className="text-gray-600 hover:text-gray-900 inline-flex items-center"
@@ -71,25 +74,19 @@ const Navbar = () => {
               {/* Mega Menu Dropdown */}
               {isCategoryOpen && (
                 <div
-                  className="absolute left-0 mt-2 w-screen max-w-screen-sm bg-white border rounded-lg  opacity-100 shadow-lg py-4"
+                  className="absolute left-0 mt-2 w-screen max-w-screen-sm bg-white border rounded-lg opacity-100 shadow-lg py-4"
                   onMouseLeave={() => setIsCategoryOpen(false)}
                 >
                   <div className="grid grid-cols-2 px-6 opacity-100">
                     {categories.map((category) => (
-                      <div
-                        key={category.name}
-                        className="space-y-4 z-50 bg-white"
-                      >
+                      <div key={category.name} className="space-y-4 z-50 bg-white">
                         <h3 className="text-sm font-semibold bg-white text-gray-900 mt-1">
                           {category.name}
                         </h3>
                         <ul className="space-y-2 bg-white">
                           {category.subcategories.map((sub) => (
                             <li key={sub}>
-                              <Link
-                                href={"/"}
-                                className="text-sm text-gray-600 hover:text-gray-900 bg-white"
-                              >
+                              <Link href={"/"} className="text-sm text-gray-600 hover:text-gray-900 bg-white">
                                 {sub}
                               </Link>
                             </li>
@@ -101,7 +98,6 @@ const Navbar = () => {
                 </div>
               )}
             </div>
-
             <Link href="/" className="text-gray-600 hover:text-gray-900">
               Explore
             </Link>
@@ -127,24 +123,19 @@ const Navbar = () => {
             <button className="bg-[#ebf0f5] p-3 rounded-md text-gray-600 hover:text-gray-900 relative">
               <Link href={"/cart"}>
                 <ShoppingCart className="h-5 w-5" />
+                {cartItemCount > 0 && (
+                  <div className="absolute -top-2 -right-2 bg-red-500 text-white text-xs rounded-full h-5 w-5 flex items-center justify-center">
+                    {cartItemCount}
+                  </div>
+                )}
               </Link>
-              <span className="absolute -top-2 -right-2 bg-red-500 text-white text-xs rounded-full h-4 w-4 flex items-center justify-center">
-                1
-              </span>
             </button>
           </div>
 
           {/* Mobile Menu Button */}
           <div className="md:hidden">
-            <button
-              onClick={toggleMenu}
-              className="text-gray-600 hover:text-gray-900"
-            >
-              {isMenuOpen ? (
-                <X className="h-6 w-6" />
-              ) : (
-                <Menu className="h-6 w-6" />
-              )}
+            <button onClick={toggleMenu} className="text-gray-600 hover:text-gray-900">
+              {isMenuOpen ? <X className="h-6 w-6" /> : <Menu className="h-6 w-6" />}
             </button>
           </div>
         </div>
@@ -153,25 +144,26 @@ const Navbar = () => {
         {isMenuOpen && (
           <div className="md:hidden">
             <div className="px-2 pt-2 pb-3 space-y-1 sm:px-3">
-              <Link
-                href="/"
-                className="block px-3 py-2 text-gray-600 hover:text-gray-900"
-              >
+              <Link href="/" className="block px-3 py-2 text-gray-600 hover:text-gray-900">
                 Home
               </Link>
+              
+              {/* Hide cart icon in mobile menu if active with bg-teal-500 */}
+              {cartItemCount === 0 && (
+                <div className="block px-3 py-2 text-gray-600 hover:text-gray-900">
+                  <Link href="/cart">
+                    <ShoppingCart className="h-5 w-5 text-teal-500" />
+                  </Link>
+                </div>
+              )}
 
-              {/* Mobile Categories Menu */}
               <div className="space-y-2">
                 <button
                   onClick={() => setIsCategoryOpen(!isCategoryOpen)}
                   className="flex items-center justify-between w-full px-3 py-2 text-gray-600 hover:text-gray-900"
                 >
                   Categories
-                  <ChevronDown
-                    className={`h-4 w-4 transform ${
-                      isCategoryOpen ? "rotate-180" : ""
-                    }`}
-                  />
+                  <ChevronDown className={`h-4 w-4 transform ${isCategoryOpen ? "rotate-180" : ""}`} />
                 </button>
 
                 {isCategoryOpen && (
@@ -182,11 +174,7 @@ const Navbar = () => {
                           {category.name}
                         </p>
                         {category.subcategories.map((sub) => (
-                          <Link
-                            key={sub}
-                            href={`/category/${sub.toLowerCase()}`}
-                            className="block px-3 py-1 text-sm text-gray-600 hover:text-gray-900"
-                          >
+                          <Link key={sub} href={`/category/${sub.toLowerCase()}`} className="block px-3 py-1 text-sm text-gray-600 hover:text-gray-900">
                             {sub}
                           </Link>
                         ))}
@@ -196,30 +184,28 @@ const Navbar = () => {
                 )}
               </div>
 
-              <Link
-                href="/explore"
-                className="block px-3 py-2 text-gray-600 hover:text-gray-900"
-              >
+              <Link href="/explore" className="block px-3 py-2 text-gray-600 hover:text-gray-900">
                 Explore
               </Link>
-              <Link
-                href="/about"
-                className="block px-3 py-2 text-gray-600 hover:text-gray-900"
-              >
+              <Link href="/about" className="block px-3 py-2 text-gray-600 hover:text-gray-900">
                 About
               </Link>
-              <Link
-                href="/blog"
-                className="block px-3 py-2 text-gray-600 hover:text-gray-900"
-              >
+              <Link href="/blog" className="block px-3 py-2 text-gray-600 hover:text-gray-900">
                 Blog
               </Link>
-              <Link
-                href="/contact"
-                className="block px-3 py-2 text-gray-600 hover:text-gray-900"
-              >
+              <Link href="/contact" className="block px-3 py-2 text-gray-600 hover:text-gray-900">
                 Contact Us
               </Link>
+              <button className="bg-[#ebf0f5] p-3 rounded-md text-gray-600 hover:text-gray-900 relative">
+              <Link href={"/cart"}>
+                <ShoppingCart className="h-5 w-5" />
+                {cartItemCount > 0 && (
+                  <div className="absolute -top-2 -right-2 bg-red-500 text-white text-xs rounded-full h-5 w-5 flex items-center justify-center">
+                    {cartItemCount}
+                  </div>
+                )}
+              </Link>
+            </button>
             </div>
           </div>
         )}

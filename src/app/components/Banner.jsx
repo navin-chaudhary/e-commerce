@@ -30,7 +30,7 @@ const PromoBanner = () => {
           </div>
 
           {/* Image Section */}
-          <div className="absolute left-[40%] max-w-lg pt-8 ">
+          <div className="absolute  hidden lg:flex left-[40%] max-w-lg pt-8 ">
             <Image
               src="/images/girls.png"
               alt="Two models in summer clothing"
@@ -40,7 +40,7 @@ const PromoBanner = () => {
             />
             
           </div>
-          <div className="absolute top-0 right-6   flex items-center justify-center ">
+          <div className="absolute top-0 right-6 hidden  lg:flex items-center justify-center ">
               <span className="text-[350px]">
               ★
               </span>
