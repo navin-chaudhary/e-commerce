@@ -7,7 +7,7 @@ const Footer = () => {
     <footer className="bg-slate-900 text-gray-300 py-12 px-4">
       <div className="max-w-6xl mx-auto">
         <div className="grid grid-cols-1 md:grid-cols-5 gap-8">
-          {/* Logo and Contact Section */}
+          
           <div className="md:col-span-1">
             <div className="flex items-center gap-2 mb-4">
             <div className="relative w-10 h-10 overflow-hidden rounded-full">
@@ -57,7 +57,7 @@ const Footer = () => {
             </div>
           </div>
 
-          {/* Products Links */}
+      
           <div className="md:col-span-1 md:mt-12 lg:mt-12 ">
             <h3 className="text-teal-400 font-medium mb-4">Products Links</h3>
             <ul className="space-y-2">
@@ -69,7 +69,7 @@ const Footer = () => {
             </ul>
           </div>
 
-          {/* Quick Links */}
+          
           <div className="md:col-span-1  md:mt-12 lg:mt-12">
             <h3 className="text-teal-400 font-medium mb-4">Quick Links</h3>
             <ul className="space-y-2">
@@ -81,7 +81,7 @@ const Footer = () => {
             </ul>
           </div>
 
-          {/* Legal Links */}
+        
           <div className="md:col-span-1  md:mt-12 lg:mt-12">
             <h3 className="text-teal-400 font-medium mb-4">Legal Links</h3>
             <ul className="space-y-2">
@@ -93,7 +93,7 @@ const Footer = () => {
             </ul>
           </div>
 
-          {/* Get the app */}
+      
           <div className="md:col-span-1  md:mt-12 lg:mt-12">
             <h3 className="text-teal-400 font-medium mb-4">Get the app</h3>
             <div className="space-y-4">
@@ -119,7 +119,7 @@ const Footer = () => {
           </div>
         </div>
 
-        {/* Copyright */}
+      
         <div className="text-center mt-12 pt-8 border-t border-gray-700">
           <p className="text-sm">Copyright © 2020. All rights reserved.</p>
         </div>

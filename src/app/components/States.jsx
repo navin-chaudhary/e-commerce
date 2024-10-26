@@ -1,6 +1,5 @@
 'use client';
-import { useState } from 'react';
-import { motion } from 'framer-motion';
+
 
 const StatsCard = ({ percentage, description }) => (
   <div className="w-full p-6 rounded-lg bg-slate-100 flex flex-col justify-center items-center shadow-md hover:shadow-lg transition-all duration-300 cursor-pointer">

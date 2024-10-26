@@ -80,7 +80,7 @@ const ServicesFeatures = () => {
                 </div>
               </div>
 
-              {/* Decorative corner shapes */}
+            
               <div className="absolute -right-4 -bottom-4 w-24 h-24 opacity-0 group-hover:opacity-10 transition-opacity duration-300">
                 <div className={`absolute transform rotate-45 w-full h-full ${feature.bgColor}`}></div>
               </div>

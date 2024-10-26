@@ -56,7 +56,7 @@ const Navbar = () => {
             </Link>
           </div>
           
-          {/* Desktop Navigation */}
+         
           <div className="hidden md:flex items-center space-x-8">
             <Link href="/" className="text-gray-600 hover:text-gray-900">
               Home
@@ -71,7 +71,7 @@ const Navbar = () => {
                 <ChevronDown className="ml-1 h-4 w-4" />
               </button>
 
-              {/* Mega Menu Dropdown */}
+             
               {isCategoryOpen && (
                 <div
                   className="absolute left-0 mt-2 w-screen max-w-screen-sm bg-white border rounded-lg opacity-100 shadow-lg py-4"
@@ -112,7 +112,7 @@ const Navbar = () => {
             </Link>
           </div>
 
-          {/* Right Side Icons */}
+         
           <div className="hidden md:flex items-center space-x-4">
             <button className="bg-[#ebf0f5] p-3 rounded-md text-gray-600 hover:text-gray-900">
               <Search className="h-5 w-5" />
@@ -148,7 +148,7 @@ const Navbar = () => {
                 Home
               </Link>
               
-              {/* Hide cart icon in mobile menu if active with bg-teal-500 */}
+             
               {cartItemCount === 0 && (
                 <div className="block px-3 py-2 text-gray-600 hover:text-gray-900">
                   <Link href="/cart">

@@ -54,13 +54,13 @@ const PopularProducts = () => {
     });
     if (!product) return;
     
-    // Format the product data to match cart requirements
+    
     const cartItem = {
       id: product.id,
       title: product.title,
       price: product.price,
       image: product.image,
-      quantity: 1, // Set initial quantity
+      quantity: 1, 
       description: product.description,
       rating: product.rating
     };

@@ -6,10 +6,9 @@ import React, { createContext, useContext, useState, useEffect } from 'react';
 const CartContext = createContext();
 
 export const CartProvider = ({ children }) => {
-  // Initialize with empty array first
   const [cartItems, setCartItems] = useState([]);
   
-  // Load data from localStorage after component mounts
+  
   useEffect(() => {
     const savedCart = localStorage.getItem('cartItems');
     if (savedCart) {
@@ -17,7 +16,7 @@ export const CartProvider = ({ children }) => {
     }
   }, []);
 
-  // Save to localStorage whenever cart changes
+ 
   useEffect(() => {
     if (cartItems.length > 0) {
       localStorage.setItem('cartItems', JSON.stringify(cartItems));
@@ -43,7 +42,7 @@ export const CartProvider = ({ children }) => {
   const removeFromCart = (productId) => {
     setCartItems((prevItems) => {
       const newItems = prevItems.filter((item) => item.id !== productId);
-      // If cart becomes empty, remove from localStorage
+     
       if (newItems.length === 0) {
         localStorage.removeItem('cartItems');
       }

@@ -10,7 +10,7 @@ const PromoBanner = () => {
         </div>
 
         <div className="relative mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 flex flex-col md:flex-row items-center justify-between">
-          {/* Text Content */}
+          
           <div className="max-w-xl   lg:pl-16 md:mb-0">
             <h1 className="text-4xl md:text-5xl font-bold text-white pt-14 pb-8">
               Lorem ipsum
@@ -29,7 +29,7 @@ const PromoBanner = () => {
             </button>
           </div>
 
-          {/* Image Section */}
+          
           <div className="absolute  hidden lg:flex left-[40%] max-w-lg pt-8 ">
             <Image
               src="/images/girls.png"

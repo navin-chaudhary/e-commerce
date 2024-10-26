@@ -6,7 +6,7 @@ import Image from 'next/image';
 const ProductCarousel = () => {
   const [currentImageIndex, setCurrentImageIndex] = useState(0);
   
-  // Sample product images - replace with your actual image URLs
+  
   const images = [
     "/images/shoes.jpeg",
     "/images/shoes2.jpeg",
@@ -25,7 +25,7 @@ const ProductCarousel = () => {
     <div className=" bg-[#f8fafc] flex items-center">
       <div className="container mx-auto px-4 md:px-0">
         <div className="grid grid-cols-1 md:grid-cols-2 gap-8 items-center">
-          {/* Left Content */}
+        
           <div className="space-y-6 md:pl-0  lg:pl-24">
             <h1 className="text-5xl md:text-5xl lg:text-6xl font-bold text-gray-900 md:max-w-96 md:ml-0 lg:ml-9">
               Lorem ipsum dolor sit.
@@ -48,7 +48,7 @@ const ProductCarousel = () => {
             </div>
           </div>
 
-          {/* Right Content - Image Carousel */}
+          
           <div className="relative group">
             <div className="overflow-hidden rounded-lg">
               <div className="relative w-full aspect-square">
@@ -70,7 +70,7 @@ const ProductCarousel = () => {
               </div>
             </div>
 
-            {/* Navigation Buttons */}
+            
             <div className="absolute bottom-4 right-4 flex space-x-2">
               <button
                 onClick={prevImage}
@@ -86,7 +86,7 @@ const ProductCarousel = () => {
               </button>
             </div>
 
-            {/* Dots Indicator */}
+            
             <div className="absolute bottom-4 left-1/2 -translate-x-1/2 flex space-x-2">
               {images.map((_, index) => (
                 <button
