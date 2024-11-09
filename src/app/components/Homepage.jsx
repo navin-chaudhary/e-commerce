@@ -1,107 +1,93 @@
-"use client";
-import React, { useState } from 'react';
-import { ChevronLeft, ChevronRight } from 'lucide-react';
-import Image from 'next/image';
 
-const ProductCarousel = () => {
-  const [currentImageIndex, setCurrentImageIndex] = useState(0);
-  
-  
-  const images = [
-    "/images/shoes.jpeg",
-    "/images/shoes2.jpeg",
-    "/images/shoes3.jpeg"
-  ];
+import React from "react";
+import Link from "next/link";
+import Image from "next/image";
 
-  const nextImage = () => {
-    setCurrentImageIndex((prev) => (prev + 1) % images.length);
-  };
-
-  const prevImage = () => {
-    setCurrentImageIndex((prev) => (prev - 1 + images.length) % images.length);
-  };
-
+const Container = ({ children, className = "" }) => {
   return (
-    <div className=" bg-[#f8fafc] flex items-center">
-      <div className="container mx-auto px-4 md:px-0">
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-8 items-center">
-        
-          <div className="space-y-6 md:pl-0  lg:pl-24">
-            <h1 className="text-5xl md:text-5xl lg:text-6xl font-bold text-gray-900 md:max-w-96 md:ml-0 lg:ml-9">
-              Lorem ipsum dolor sit.
-            </h1> 
-            <p className="text-gray-600  lg:p-4 lg:pl-8">
-              Lorem ipsum dolor sit amet consectetur. Varius eu sed adipiscing 
-              pellentesque feugiat gravida tincidunt lobortis mi. Nisl sollicitudin in 
-              dictumst elementum amet nulla. Malesuada tempor consequat dui fringilla 
-              pretium. Egestas nibh et sociis enim nisi aliquet ultrices.
-            </p>
-            <div className="flex space-x-4 lg:ml-7">
-              <button className="px-6 py-2 border-2 border-teal-500 text-teal-500 
-                rounded-lg hover:bg-teal-500 hover:text-white duration-300 transition-colors">
-                Explore
-              </button>
-              <button className="px-6 py-2 bg-teal-500 text-white rounded-lg 
-                hover:bg-teal-600 transition-colors">
-                Buy Now
-              </button>
-            </div>
-          </div>
-
-          
-          <div className="relative group">
-            <div className="overflow-hidden rounded-lg">
-              <div className="relative w-full aspect-square">
-                {images.map((img, index) => (
-                  <div
-                    key={index}
-                    className={`absolute w-full h-full transition-opacity duration-500 ease-in-out
-                      ${currentImageIndex === index ? 'opacity-1' : 'opacity-0'}`}
-                  >
-                    <Image
-                      src={img}
-                      alt={`Product ${index + 1}`}
-                      className="w-full h-full   object-cover"
-                      height={1000}
-                      width={1000}
-                    />
-                  </div>
-                ))}
-              </div>
-            </div>
-
-            
-            <div className="absolute bottom-4 right-4 flex space-x-2">
-              <button
-                onClick={prevImage}
-                className="bg-white/80 rounded-full p-2 opacity-85  transition-opacity"
-              >
-                <ChevronLeft className="w-6 h-6 text-gray-800" />
-              </button>
-              <button
-                onClick={nextImage}
-                className="bg-[#14B8A6] rounded-full p-2 opacity-85  transition-opacity"
-              >
-                <ChevronRight className="w-6 h-6 text-gray-800" />
-              </button>
-            </div>
-
-            
-            <div className="absolute bottom-4 left-1/2 -translate-x-1/2 flex space-x-2">
-              {images.map((_, index) => (
-                <button
-                  key={index}
-                  onClick={() => setCurrentImageIndex(index)}
-                  className={`w-2 h-2 rounded-full transition-colors
-                    ${currentImageIndex === index ? 'bg-teal-500' : 'bg-gray-300'}`}
-                />
-              ))}
-            </div>
-          </div>
-        </div>
-      </div>
+    <div className={`mx-auto w-full max-w-[1380px] px-4 sm:px-6 lg:px-8 ${className}`}>
+      {children}
     </div>
   );
 };
 
-export default ProductCarousel;
+const HomePage = ({ saleText = "Sale 20% Off", description, imgSrc }) => {
+  return (
+    <main className="w-full bg-white  pt-1  ">
+      <Container>
+        <div className="relative w-full  min-h-[500px] lg:min-h-[600px] overflow-hidden rounded-2xl" 
+         style={{
+                      background: `
+                                radial-gradient(circle at 0 0, #ffa600, transparent 100%),
+                                radial-gradient(circle at 20% 100%, hsla(0, 0%, 99%, .3), transparent 100%),
+                                radial-gradient(circle at 100% 100%, red, transparent 100%)
+                                `,
+                      boxShadow: `inset 0 0 15px 5px rgba(255, 255, 255, 0.7)`, // uniform inset shadow
+                    }}
+        >
+          <div className="grid grid-cols-1 lg:grid-cols-2 h-full">
+            {/* Left side content */}
+            <div className="flex items-center justify-center p-8 lg:p-12">
+              <div className="space-y-6">
+                {/* Sale Text */}
+                <h1 className="text-3xl md:text-5xl font-extrabold text-red-600">
+                  {saleText}
+                </h1>
+                {/* Main Title */}
+                <p className="text-3xl md:text-5xl font-semibold tracking-wide text-gray-800">
+                  On Everything
+                </p>
+                {/* Description */}
+                <p className="text-lg md:text-xl text-gray-600 max-w-xl leading-relaxed">
+                  {description || "Discover unbeatable prices on quality products, from the latest trends to everyday essentials. Don't miss out on these exclusive, limited-time deals – your perfect find is just a click away!"}
+                </p>
+                {/* Trust Points */}
+                <div className="space-y-3">
+                  {[
+                    "Free Shipping on Orders Over $50",
+                    "24/7 Customer Support",
+                    "7 Days Easy Return",
+                    "Secure Payment Method"
+                  ].map((point, index) => (
+                    <div key={index} className="flex items-center space-x-2 text-gray-700">
+                      <span className="flex-shrink-0 w-6 h-6 bg-green-400 rounded-full flex items-center justify-center">
+                        ✓
+                      </span>
+                      <p className="text-md md:text-lg font-medium">{point}</p>
+                    </div>
+                  ))}
+                </div>
+                {/* CTA Button */}
+                <div className="pt-6">
+                  <Link
+                    href="/products"
+                    className="inline-block px-8 py-4 text-lg bg-red-600 hover:bg-red-700 
+                      text-white font-bold rounded-lg transition-all duration-300 
+                      hover:scale-105 focus:outline-none focus:ring-2 
+                      focus:ring-red-500 focus:ring-opacity-50 active:scale-95"
+                  >
+                    Shop Now
+                  </Link>
+                </div>
+              </div>
+            </div>
+
+            {/* Right side images */}
+            <div className="relative hidden lg:flex  justify-center ">
+              <div className="h-full w-full">
+                <Image
+                  src={imgSrc || "/images/girlsphoto2.png"} 
+                  alt="Featured product" 
+                  fill
+                  className="rounded-lg object-cover h-full w-full"
+                />
+              </div>
+            </div>
+          </div>
+        </div>
+      </Container>
+    </main>
+  );
+};
+
+export default HomePage;

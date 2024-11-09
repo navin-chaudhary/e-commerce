@@ -1,5 +1,6 @@
 /** @type {import('next').NextConfig} */
 const nextConfig = {
+  output: 'standalone',
   images: {
     remotePatterns: [
       {
@@ -8,8 +9,23 @@ const nextConfig = {
         port: '',
         pathname: '*',
       },
+      {
+        protocol: 'https',
+        hostname: 'lh3.googleusercontent.com',
+        pathname: '/a/**',
+      },
+      {
+        protocol: 'https',
+        hostname: 'avatars.githubusercontent.com',
+        pathname: '/u/**',
+      }
     ],
-    domains: ['images.pexels.com', 'fakestoreapi.com'], // Added 'fakestoreapi.com' here
+    domains: [
+      'images.pexels.com', 
+      'fakestoreapi.com',
+      'lh3.googleusercontent.com',
+      'avatars.githubusercontent.com'
+    ],
   },
 };
 

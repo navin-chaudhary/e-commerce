@@ -5,10 +5,17 @@ import Image from "next/image";
 import { useCart } from "../context/CartContext";
 import Navbar from "../components/Navbar";
 import Footer from "../components/Footer";
+import { Toaster, toast } from 'sonner';
 
 const CartClient = () => {
   const { cartItems = [], removeFromCart, updateQuantity } = useCart();
   const [couponCode, setCouponCode] = useState("");
+
+  // Toast configuration object for consistent styling
+  const toastConfig = {
+    className: "bg-black text-white font-bold text-lg",
+    duration: 2000,
+  };
 
   const calculateSubTotal = () => {
     return cartItems.reduce(
@@ -19,17 +26,73 @@ const CartClient = () => {
 
   const formatPrice = (price) => {
     const safePrice = Number(price) || 0;
-    return safePrice.toFixed(0);
+    return safePrice.toFixed(2);
+  };
+
+  const handleRemoveFromCart = (itemId, itemTitle) => {
+    removeFromCart(itemId);
+    toast.error(`Removed ${itemTitle || 'item'} from cart`, {
+      ...toastConfig,
+      icon: "×",
+    });
+  };
+
+  const handleQuantityUpdate = (itemId, newQuantity, itemTitle) => {
+    if (newQuantity < 1) return;
+    
+    updateQuantity(itemId, newQuantity);
+    toast.success(`Updated ${itemTitle || 'item'} quantity to ${newQuantity}`, {
+      ...toastConfig,
+      icon: "✓",
+    });
+  };
+
+  const handleApplyCoupon = () => {
+    if (!couponCode.trim()) {
+      toast.error("Please enter a coupon code", {
+        ...toastConfig,
+        icon: "!",
+      });
+      return;
+    }
+    
+    toast.info("Processing coupon code...", {
+      ...toastConfig,
+      icon: "⌛",
+    });
+    
+    // Simulating API call delay
+    setTimeout(() => {
+      toast.error("Invalid coupon code", {
+        ...toastConfig,
+        icon: "×",
+      });
+    }, 1500);
+  };
+
+  const handleCheckout = () => {
+    if (cartItems.length === 0) {
+      toast.error("Your cart is empty", {
+        ...toastConfig,
+        icon: "!",
+      });
+      return;
+    }
+    
+    toast.success("Proceeding to checkout...", {
+      ...toastConfig,
+      icon: "→",
+    });
+    // Add your checkout logic here
   };
 
   return (
     <div className="bg-white min-h-screen">
       <Navbar />
       <div className="w-full">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pb-8">
+        <div className="max-w-[1380px] mx-auto px-4 sm:px-6 lg:px-8">
           <div className="space-y-6">
-          
-            <div className="hidden md:grid grid-cols-6 text-sm font-medium text-gray-700 bg-[#F1FDFB] p-4 rounded-lg mb-4">
+            <div className="hidden md:grid grid-cols-6 text-sm font-medium text-gray-700 bg-[#d8f2ed] p-4 rounded-lg mb-4">
               <div className="col-span-2">PRODUCT DETAILS</div>
               <div className="text-center">PRICE</div>
               <div className="text-center">QUANTITY</div>
@@ -40,13 +103,11 @@ const CartClient = () => {
               </div>
             </div>
 
-            
-            <div className="md:hidden text-sm font-medium text-gray-700 bg-[#F1FDFB] p-4 rounded-lg mb-4">
+            <div className="md:hidden text-sm font-medium text-gray-700 bg-[#d8f2ed] p-4 rounded-lg mb-4">
               <div className="text-center">YOUR SHOPPING CART</div>
             </div>
 
             <div className="w-full space-y-4">
-        
               <div className="hidden md:block">
                 {cartItems.map((item) => (
                   <div
@@ -79,7 +140,7 @@ const CartClient = () => {
                     <div className="flex justify-center">
                       <div className="flex items-center bg-gray-100 rounded-md">
                         <button
-                          onClick={() => updateQuantity(item?.id, (item?.quantity || 1) - 1)}
+                          onClick={() => handleQuantityUpdate(item?.id, (item?.quantity || 1) - 1, item?.title)}
                           className="p-2 text-gray-500 hover:text-gray-700 disabled:opacity-50"
                           disabled={(item?.quantity || 1) <= 1}
                         >
@@ -89,7 +150,7 @@ const CartClient = () => {
                           {item?.quantity || 1}
                         </span>
                         <button
-                          onClick={() => updateQuantity(item?.id, (item?.quantity || 1) + 1)}
+                          onClick={() => handleQuantityUpdate(item?.id, (item?.quantity || 1) + 1, item?.title)}
                           className="p-2 text-gray-500 hover:text-gray-700"
                         >
                           <Plus size={16} />
@@ -104,7 +165,7 @@ const CartClient = () => {
                         ${formatPrice((item?.price || 0) * (item?.quantity || 1))}
                       </span>
                       <button
-                        onClick={() => removeFromCart(item?.id)}
+                        onClick={() => handleRemoveFromCart(item?.id, item?.title)}
                         className="text-teal-500 hover:text-teal-600 p-2"
                       >
                         <Trash2 size={18} />
@@ -114,7 +175,6 @@ const CartClient = () => {
                 ))}
               </div>
 
-             
               <div className="md:hidden">
                 {cartItems.map((item) => (
                   <div
@@ -142,7 +202,7 @@ const CartClient = () => {
                     <div className="grid grid-cols-3 gap-4 items-center mt-4">
                       <div className="flex items-center bg-gray-100 rounded-md">
                         <button
-                          onClick={() => updateQuantity(item?.id, (item?.quantity || 1) - 1)}
+                          onClick={() => handleQuantityUpdate(item?.id, (item?.quantity || 1) - 1, item?.title)}
                           className="p-2 text-gray-500 hover:text-gray-700 disabled:opacity-50"
                           disabled={(item?.quantity || 1) <= 1}
                         >
@@ -152,7 +212,7 @@ const CartClient = () => {
                           {item?.quantity || 1}
                         </span>
                         <button
-                          onClick={() => updateQuantity(item?.id, (item?.quantity || 1) + 1)}
+                          onClick={() => handleQuantityUpdate(item?.id, (item?.quantity || 1) + 1, item?.title)}
                           className="p-2 text-gray-500 hover:text-gray-700"
                         >
                           <Plus size={16} />
@@ -168,7 +228,7 @@ const CartClient = () => {
                           ${formatPrice((item?.price || 0) * (item?.quantity || 1))}
                         </span>
                         <button
-                          onClick={() => removeFromCart(item?.id)}
+                          onClick={() => handleRemoveFromCart(item?.id, item?.title)}
                           className="text-teal-500 hover:text-teal-600 p-2"
                         >
                           <Trash2 size={18} />
@@ -180,7 +240,6 @@ const CartClient = () => {
               </div>
             </div>
 
-           
             {(!cartItems || cartItems.length === 0) && (
               <div className="text-center py-12">
                 <p className="text-gray-500 mb-4">Your cart is empty</p>
@@ -195,78 +254,62 @@ const CartClient = () => {
           </div>
         </div>
 
-        
         {cartItems?.length > 0 && (
-          <div className="bg-[#F8FAFC] w-full px-4 sm:px-6 lg:px-8 ">
-            <div className="max-w-7xl mx-auto">
+          <div className="bg-[#F8FAFC] w-full px-4 sm:px-6 lg:px-8">
+            <div className="max-w-[1380px] mx-auto lg:px-8">
               <div className="grid md:grid-cols-2 gap-8">
-                
                 <div className="space-y-4 py-5">
                   <h3 className="text-base lg:text-xl font-bold text-gray-900">
                     Discount Codes
                   </h3>
                   <p className="text-black">Enter your coupon code if you have one</p>
-                  <div className="flex flex-col sm:flex-row gap-3 sm:gap-0 max-w-md">
+                  <div className="flex flex-col sm:flex-row gap-3">
                     <input
                       type="text"
+                      className="flex-1 border rounded-md p-2 text-black"
                       value={couponCode}
                       onChange={(e) => setCouponCode(e.target.value)}
-                      className="flex-1 border rounded-md sm:rounded-r-none px-3 py-2 text-sm"
-                      placeholder="Enter coupon code"
+                      placeholder="Coupon Code"
                     />
-                    <button className="bg-teal-500 text-white px-4 py-2 rounded-md sm:rounded-l-none hover:bg-teal-600 text-sm">
-                      Apply Coupon
+                    <button
+                      onClick={handleApplyCoupon}
+                      className="bg-teal-500 text-white px-4 py-2 rounded-md hover:bg-teal-600 transition-colors"
+                    >
+                      Apply
                     </button>
                   </div>
-                  <button className="text-teal-500 border border-teal-500 px-4 py-2 rounded-md hover:bg-teal-50 text-sm w-full sm:w-auto">
-                    Continue Shopping
-                  </button>
                 </div>
 
-                
-                <div className="w-full max-w-md mx-auto">
-                  <div className="bg-[#F1FDFB] border rounded-lg p-6 space-y-6">
-                    <div className="space-y-4">
-                      <div className="flex items-center justify-between text-gray-700">
-                        <span className="text-sm">Sub Total</span>
-                        <span className="font-medium">
-                          Rs.{formatPrice(calculateSubTotal())}
-                        </span>
-                      </div>
-
-                      <div className="flex items-center justify-between text-gray-700">
-                        <span className="text-sm">Shipping</span>
-                        <span className="font-medium">Rs.00</span>
-                      </div>
-
-                      <div className="pt-4 border-t border-dashed border-teal-200">
-                        <div className="flex items-center justify-between text-gray-900">
-                          <span className="font-medium">Grand Total</span>
-                          <span className="font-bold">
-                            Rs.{formatPrice(calculateSubTotal())}
-                          </span>
-                        </div>
-                      </div>
-                    </div>
-
-                    <div className="w-full h-px bg-teal-200"></div>
-
-                    <div className="flex justify-center">
-                      <button
-                        className="w-full md:w-auto bg-teal-500 text-white font-medium py-3 px-8 rounded-md 
-                        hover:bg-teal-600 transition-colors duration-200 focus:outline-none 
-                        focus:ring-2 focus:ring-teal-500 focus:ring-offset-2"
-                      >
-                        Proceed To Checkout
-                      </button>
-                    </div>
+                <div className="bg-[#F1FDFB] rounded-lg shadow p-4 md:p-8">
+                  <div className="flex justify-between pb-2 text-black">
+                    <span>Subtotal</span>
+                    <span>${formatPrice(calculateSubTotal())}</span>
                   </div>
+                  <div className="flex justify-between py-2">
+                    <span className="text-black">Shipping</span>
+                    <span className="text-teal-500">FREE</span>
+                  </div>
+                  <div className="flex justify-between font-bold py-2 border-b-2 border-black text-black">
+                    <span>Grand Total</span>
+                    <span>${formatPrice(calculateSubTotal())}</span>
+                  </div>
+                  <button
+                    onClick={handleCheckout}
+                    className="mt-4 bg-teal-500 text-white px-4 py-2 rounded-md hover:bg-teal-600 transition-colors w-full"
+                  >
+                    Proceed to Checkout
+                  </button>
                 </div>
               </div>
             </div>
           </div>
         )}
       </div>
+      <Toaster 
+        position="bottom-right"
+        expand={true}
+        richColors
+      />
       <Footer />
     </div>
   );

@@ -1,92 +1,59 @@
 "use client";
 import Image from 'next/image';
-import React, { useEffect, useState } from 'react';
+import React from 'react';
 
 const PopularBrands = () => {
-  const [scrollPosition, setScrollPosition] = useState(0);
-  const [isHovered, setIsHovered] = useState(false);
-
   const brands = [
-    { id: 1, name: 'Converse', logo: '/images/brand1.png' },
-    { id: 2, name: 'Adidas', logo: '/images/brand2.png' },
-    { id: 3, name: 'Chanel', logo: '/images/brand3.png' },
-    { id: 4, name: 'Puma', logo: '/images/brand4.png' },
-    { id: 5, name: 'Skechers', logo: '/images/brand5.png' },
-    { id: 6, name: 'Forever 21', logo: '/images/brand6.png' },
-    { id: 7, name: 'Fila', logo: '/images/brand7.png' },
-    { id: 8, name: 'Lacoste', logo: '/images/brand8.png' },
+    { id: 1, name: 'jbl', logo: '/images/jbl-logo.png' },
+    { id: 2, name: 'leehur', logo: '/images/leehur-logo.png' },
+    { id: 3, name: 'lg', logo: '/images/lg-logo.png' },
+    { id: 4, name: 'mi', logo: '/images/xiaomi-logo.png' },
+    { id: 5, name: 'sony', logo: '/images/sony-logo.png' },
+    { id: 6, name: 'marshall', logo: '/images/marshall-logo.png' },
   ];
 
-  useEffect(() => {
-    if (isHovered) return;
-
-    const animateScroll = () => {
-      setScrollPosition((prev) => {
-        const newPosition = prev + 1;
-        return newPosition >= brands.length * 200 ? 0 : newPosition;
-      });
-    };
-
-    const interval = setInterval(animateScroll, 30);
-    return () => clearInterval(interval);
-  }, [brands.length, isHovered]);
-
   return (
-    <div className="w-full bg-white text-black py-12 px-4">
-      <h2 className="text-3xl font-bold lg:ml-16 ml-2 lg:text-4xl mb-12">Popular Brands</h2>
+    <section className="w-full bg-gradient-to-b from-white via-gray-50 to-white pb-10">
+      <div className="max-w-[1380px] mx-auto px-4 sm:px-6 lg:px-8">
+        {/* Header with animated underline */}
+        <div className="mb-12  lg:text-left">
+          <h2 className="text-4xl font-bold text-gray-800 inline-block relative">
+            Popular Brands
+           
+          </h2>
+        </div>
 
-      <div
-        className="relative overflow-hidden"
-        onMouseEnter={() => setIsHovered(true)}
-        onMouseLeave={() => setIsHovered(false)}
-      >
-        <div className="flex space-x-4 whitespace-nowrap">
-          <div
-            className="flex space-x-8"
-            style={{
-              transform: `translateX(-${scrollPosition}px)`,
-            }}
-          >
+        {/* Brands container with glass morphism effect */}
+        <div className=" rounded-2xl ">
+          <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-8">
             {brands.map((brand) => (
               <div
                 key={brand.id}
-                className="inline-flex flex-col items-center justify-center min-w-[200px] h-36"
+                className="group relative"
               >
-                <Image
-                  src={brand.logo}
-                  height={1000}
-                  width={1000}
-                  alt={`${brand.name} logo`}
-                  className="h-24 w-24 object-contain filter grayscale hover:grayscale-0 transition-all duration-300"
-                />
-              </div>
-            ))}
-          </div>
+                {/* Hover card effect */}
+                <div className="absolute inset-0 bg-blue-50 rounded-xl transform transition-all duration-300 opacity-0 group-hover:opacity-100 -z-10"></div>
+                
+                {/* Brand container */}
+                <div className="relative flex items-center justify-center p-6 rounded-xl transition-all duration-300 hover:shadow-md border bg-white group-hover:bg-opacity-80">
+                  <div className="relative w-full aspect-square">
+                    <Image
+                      src={brand.logo}
+                      alt={`${brand.name} logo`}
+                      fill
+                      className="object-contain filter grayscale hover:grayscale-0 transition-all duration-500 transform group-hover:scale-110"
+                      sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
+                    />
+                  </div>
+                </div>
 
-          <div
-            className="flex space-x-8 absolute left-full top-0"
-            style={{
-              transform: `translateX(-${scrollPosition}px)`,
-            }}
-          >
-            {brands.map((brand) => (
-              <div
-                key={`duplicate-${brand.id}`}
-                className="inline-flex flex-col items-center justify-center min-w-[200px] h-36"
-              >
-                <Image
-                  src={brand.logo}
-                  alt={`${brand.name} logo`}
-                  className="h-24 w-24 object-contain filter grayscale hover:grayscale-0 transition-all duration-300"
-                  width={200}
-                  height={200}
-                />
+               
               </div>
             ))}
           </div>
         </div>
       </div>
-    </div>
+    </section>
   );
 };
 
