@@ -1,6 +1,6 @@
 /** @type {import('next').NextConfig} */
 const nextConfig = {
-  output: 'standalone',
+  
   images: {
     remotePatterns: [
       {
@@ -26,6 +26,14 @@ const nextConfig = {
       'lh3.googleusercontent.com',
       'avatars.githubusercontent.com'
     ],
+  },
+  reactStrictMode: true,
+  webpack: (config) => {
+    config.resolve.fallback = {
+      ...config.resolve.fallback,
+      fs: false,
+    };
+    return config;
   },
 };
 

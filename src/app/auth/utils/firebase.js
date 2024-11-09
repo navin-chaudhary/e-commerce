@@ -1,5 +1,5 @@
 // firebase.js
-import { initializeApp } from 'firebase/app';
+import { initializeApp, getApps } from 'firebase/app';
 import { 
   getAuth, 
   GoogleAuthProvider, 
@@ -17,10 +17,15 @@ const firebaseConfig = {
   appId: process.env.NEXT_PUBLIC_FIREBASE_APP_ID,
 };
 
-const app = initializeApp(firebaseConfig);
+// Initialize Firebase only if it hasn't been initialized already
+const app = !getApps().length ? initializeApp(firebaseConfig) : getApps()[0];
 const auth = getAuth(app);
 
+// Configure Google Auth Provider
 const googleProvider = new GoogleAuthProvider();
+googleProvider.setCustomParameters({
+  prompt: 'select_account'
+});
 
 export const signInWithGoogle = async () => {
   try {
@@ -41,20 +46,19 @@ export const loginWithEmail = async (email, password) => {
     return { success: false, error: error.message };
   }
 };
+
 export const registerWithEmail = async (email, password) => {
-    try {
-      const userCredential = await createUserWithEmailAndPassword(auth, email, password);
-      return { success: true, user: userCredential.user };
-    } catch (error) {
-      if (error.code === 'auth/email-already-in-use') {
-        console.error('Registration error: Email is already in use.');
-        return { success: false, error: 'This email is already registered. Please use a different email or log in.' };
-      } else {
-        console.error('Email registration error:', error);
-        return { success: false, error: error.message };
-      }
+  try {
+    const userCredential = await createUserWithEmailAndPassword(auth, email, password);
+    return { success: true, user: userCredential.user };
+  } catch (error) {
+    if (error.code === 'auth/email-already-in-use') {
+      console.error('Registration error: Email is already in use.');
+      return { success: false, error: 'This email is already registered. Please use a different email or log in.' };
     }
-  };
-  
+    console.error('Email registration error:', error);
+    return { success: false, error: error.message };
+  }
+};
 
 export { auth };
