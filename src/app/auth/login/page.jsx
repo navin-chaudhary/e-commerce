@@ -14,7 +14,6 @@ import {
   initializeFirebase,
   
 } from "../utils/firebase";
-// import { initializeFirebase } from "../utils/initializeFirebase";
 const LoginPage = () => {
   const [loadingEmailAuth, setLoadingEmailAuth] = useState(false);
   const [loadingGoogle, setLoadingGoogle] = useState(false);
@@ -28,30 +27,26 @@ const LoginPage = () => {
 
   useEffect(() => {
     try {
-      // Initialize Firebase when component mounts
       initializeFirebase();
-      console.log("Firebase initialized successfully");
       
-      // Check for existing user
+      
+     
       if (typeof window !== "undefined") {
         const storedUser = localStorage.getItem("user");
         if (storedUser) {
           setUser(JSON.parse(storedUser));
-          console.log("Found stored user:", storedUser);
         }
       }
     } catch (error) {
-      console.error("Firebase initialization error:", error);
       toast.error("Error initializing authentication service");
     }
   }, []);
 
   const handleGoogleLogin = async () => {
-    console.log("Starting Google login process...");
+    
     try {
       setLoadingGoogle(true);
       const result = await signInWithGoogle();
-      console.log("Google login result:", result);
 
       if (result?.success) {
         setUser(result.user);
@@ -59,22 +54,18 @@ const LoginPage = () => {
         toast.success(`Welcome, ${result.user.displayName || "user"}!`);
         router.push("/");
       } else {
-        console.error("Google login failed:", result?.error);
-        toast.error(`Login failed: ${result?.error || "Unknown error"}`);
+        toast.error(`Login failed`);
       }
     } catch (error) {
-      console.error("Google login error:", error);
-      toast.error(error?.message || "Failed to login with Google");
+      toast.error( "Failed to login with Google");
     } finally {
       setLoadingGoogle(false);
     }
   };
 
   const handleEmailAuth = async () => {
-    console.log("Starting email auth process...");
-    console.log("Mode:", isRegistering ? "register" : "login");
+   
     
-    // Validation
     if (isRegistering && !username) {
       toast.error("Please enter a username.");
       return;
@@ -94,7 +85,7 @@ const LoginPage = () => {
         ? await registerWithEmail(email, password, username)
         : await loginWithEmail(email, password);
 
-      console.log("Email auth result:", result);
+     
 
       if (result?.success) {
         setUser(result.user);
@@ -105,12 +96,10 @@ const LoginPage = () => {
         toast.success(message);
         router.push("/");
       } else {
-        console.error("Email auth failed:", result?.error);
-        toast.error(result?.error || "Authentication failed");
+        toast.error( "Authentication failed");
       }
     } catch (error) {
-      console.error("Email auth error:", error);
-      toast.error(error?.message || "Authentication failed");
+      toast.error("Authentication failed");
     } finally {
       setLoadingEmailAuth(false);
     }

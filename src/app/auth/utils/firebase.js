@@ -1,3 +1,4 @@
+
 import { initializeApp, getApps } from 'firebase/app';
 import { 
   getAuth, 
@@ -55,7 +56,6 @@ export const logoutUser = async () => {
     localStorage.removeItem("user");
     return { success: true };
   } catch (error) {
-    console.error('Logout error:', error);
     return {
       success: false,
       error: error.message
