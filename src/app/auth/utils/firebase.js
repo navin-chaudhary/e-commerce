@@ -7,7 +7,6 @@ import {
   createUserWithEmailAndPassword,
   signOut
 } from 'firebase/auth';
-import { initializeFirebase } from './initializeFirebase';
 
 const firebaseConfig = {
   apiKey: process.env.NEXT_PUBLIC_FIREBASE_API_KEY,
@@ -19,14 +18,17 @@ const firebaseConfig = {
   measurementId: process.env.NEXT_PUBLIC_FIREBASE_MEASUREMENT_ID
 };
 
-// Initialize Firebase
-let app=initializeFirebase(firebaseConfig);
+// Initialize Firebase (ensure it's initialized only once)
+let app;
 try {
+  // Try initializing Firebase if it's not already initialized
   app = initializeApp(firebaseConfig);
 } catch (error) {
   if (!/already exists/.test(error.message)) {
     console.error('Firebase initialization error', error.stack);
   }
+  // Use the existing Firebase app instance
+  app = app || initializeApp(firebaseConfig);
 }
 
 // Get Auth instance
