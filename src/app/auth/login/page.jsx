@@ -11,9 +11,9 @@ import {
   signInWithGoogle, 
   loginWithEmail, 
   registerWithEmail,
-  initializeFirebase 
+  
 } from "../utils/firebase";
-
+import { initializeFirebase } from "../utils/initializeFirebase";
 const LoginPage = () => {
   const [loadingEmailAuth, setLoadingEmailAuth] = useState(false);
   const [loadingGoogle, setLoadingGoogle] = useState(false);

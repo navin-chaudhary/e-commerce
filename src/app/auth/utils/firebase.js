@@ -4,10 +4,10 @@ import {
   signInWithPopup, 
   GoogleAuthProvider, 
   signInWithEmailAndPassword,
-  createUserWithEmailAndPassword
+  createUserWithEmailAndPassword,
+  signOut
 } from 'firebase/auth';
-
-let app;
+import { initializeFirebase } from './initializeFirebase';
 
 const firebaseConfig = {
   apiKey: process.env.NEXT_PUBLIC_FIREBASE_API_KEY,
@@ -18,22 +18,42 @@ const firebaseConfig = {
   appId: process.env.NEXT_PUBLIC_FIREBASE_APP_ID
 };
 
-export const initializeFirebase = () => {
+// Initialize Firebase
+let app=initializeFirebase(firebaseConfig);
+try {
+  app = initializeApp(firebaseConfig);
+} catch (error) {
+  if (!/already exists/.test(error.message)) {
+    console.error('Firebase initialization error', error.stack);
+  }
+}
+
+// Get Auth instance
+const getFirebaseAuth = () => {
+  if (!app) {
+    app = initializeApp(firebaseConfig);
+  }
+  return getAuth(app);
+};
+
+export const logoutUser = async () => {
   try {
-    if (!app) {
-      app = initializeApp(firebaseConfig);
-      console.log('Firebase initialized successfully');
-    }
-    return app;
+    const auth = getFirebaseAuth();
+    await signOut(auth);
+    localStorage.removeItem("user");
+    return { success: true };
   } catch (error) {
-    console.error('Error initializing Firebase:', error);
-    throw error;
+    console.error('Logout error:', error);
+    return {
+      success: false,
+      error: error.message
+    };
   }
 };
 
 export const signInWithGoogle = async () => {
   try {
-    const auth = getAuth();
+    const auth = getFirebaseAuth();
     const provider = new GoogleAuthProvider();
     const result = await signInWithPopup(auth, provider);
     
@@ -57,7 +77,7 @@ export const signInWithGoogle = async () => {
 
 export const loginWithEmail = async (email, password) => {
   try {
-    const auth = getAuth();
+    const auth = getFirebaseAuth();
     const result = await signInWithEmailAndPassword(auth, email, password);
     
     return {
@@ -79,7 +99,7 @@ export const loginWithEmail = async (email, password) => {
 
 export const registerWithEmail = async (email, password, username) => {
   try {
-    const auth = getAuth();
+    const auth = getFirebaseAuth();
     const result = await createUserWithEmailAndPassword(auth, email, password);
     
     return {

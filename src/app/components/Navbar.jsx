@@ -7,6 +7,7 @@ import Image from "next/image";
 import { useCart } from "../context/CartContext";
 import { useRouter } from "next/navigation";
 import { toast } from "sonner"; // Assuming you're using react-toastify
+import { logoutUser } from "../auth/utils/firebase";
 
 const Navbar = () => {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
@@ -15,18 +16,27 @@ const Navbar = () => {
   const pathname = usePathname();
   const [user, setUser] = useState(null);
   const router = useRouter();
-  // const user = JSON.parse(localStorage.getItem("user"));
+  const [isLoggingOut, setIsLoggingOut] = useState(false);
 
   const cartItemCount =
     cartItems?.reduce((total, item) => total + (item.quantity || 1), 0) || 0;
   const favoriteCount = getFavoritesCount();
   
   useEffect(() => {
-    // Run only on the client side
-    const user = localStorage.getItem("user");
-    if (user) {
-      setUser(JSON.parse(user));
+    const checkUser = () => {
+      const storedUser = localStorage.getItem("user");
+      if (storedUser) {
+        setUser(JSON.parse(storedUser));
+      } else {
+        setUser(null);
+      }
     }
+    checkUser();
+    window.addEventListener('focus', checkUser);
+    
+    return () => {
+      window.removeEventListener('focus', checkUser);
+    };
   }, []);
 
 
@@ -38,10 +48,28 @@ const Navbar = () => {
     setIsLogoutModalOpen(!isLogoutModalOpen);
   };
 
-  const handleLogout = () => {
-    localStorage.removeItem("user");
-    setIsLogoutModalOpen(false);
-    router.push("/");
+  const handleLogout = async () => {
+    if (isLoggingOut) return;
+    
+    try {
+      setIsLoggingOut(true);
+      const result = await logoutUser();
+      
+      if (result.success) {
+        setUser(null);
+        toast.success("Logged out successfully");
+        
+        // Force a full page refresh and redirect to home
+        window.location.href = "/";
+      } else {
+        toast.error("Logout failed: " + (result.error || "Unknown error"));
+      }
+    } catch (error) {
+      console.error("Logout error:", error);
+      toast.error("Error during logout: " + (error.message || "Unknown error"));
+    } finally {
+      setIsLoggingOut(false);
+    }
   };
 
   const getLinkClassName = (path) =>
