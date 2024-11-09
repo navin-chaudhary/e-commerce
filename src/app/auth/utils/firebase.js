@@ -1,4 +1,4 @@
-import { initializeApp } from 'firebase/app';
+import { initializeApp, getApps } from 'firebase/app';
 import { 
   getAuth, 
   signInWithPopup, 
@@ -18,25 +18,32 @@ const firebaseConfig = {
   measurementId: process.env.NEXT_PUBLIC_FIREBASE_MEASUREMENT_ID
 };
 
-// Initialize Firebase (ensure it's initialized only once)
+// Initialize Firebase
 let app;
-try {
-  // Try initializing Firebase if it's not already initialized
-  app = initializeApp(firebaseConfig);
-} catch (error) {
-  if (!/already exists/.test(error.message)) {
-    console.error('Firebase initialization error', error.stack);
+let auth;
+
+// Initialize Firebase (ensure it's initialized only once)
+const initializeFirebase = () => {
+  if (!getApps().length) {
+    try {
+      app = initializeApp(firebaseConfig);
+      auth = getAuth(app);
+      return { app, auth };
+    } catch (error) {
+      console.error('Error initializing Firebase:', error);
+      throw error;
+    }
   }
-  // Use the existing Firebase app instance
-  app = app || initializeApp(firebaseConfig);
-}
+  return { app: getApps()[0], auth: getAuth() };
+};
 
 // Get Auth instance
 const getFirebaseAuth = () => {
-  if (!app) {
-    app = initializeApp(firebaseConfig);
+  if (!auth) {
+    const { auth: newAuth } = initializeFirebase();
+    auth = newAuth;
   }
-  return getAuth(app);
+  return auth;
 };
 
 export const logoutUser = async () => {
@@ -121,3 +128,6 @@ export const registerWithEmail = async (email, password, username) => {
     };
   }
 };
+
+// Export initialization function
+export { initializeFirebase };
