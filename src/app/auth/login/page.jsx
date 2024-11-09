@@ -24,8 +24,10 @@ const LoginPage = () => {
   const router = useRouter();
 
   useEffect(() => {
-    const storedUser = localStorage.getItem("user");
-    if (storedUser) setUser(JSON.parse(storedUser));
+    if (typeof window !== "undefined") {
+      const storedUser = localStorage.getItem("user");
+      if (storedUser) setUser(JSON.parse(storedUser));
+    }
   }, []);
 
   const handleGoogleLogin = async () => {
@@ -35,17 +37,10 @@ const LoginPage = () => {
       if (result.success) {
         setUser(result.user);
         localStorage.setItem("user", JSON.stringify(result.user));
-        toast.success(`Welcome, ${result.user.displayName || "user"}!`, {
-          className: "animate__animated animate__fadeInUp",
-        });
+        toast.success(`Welcome, ${result.user.displayName || "user"}!`);
         router.push("/");
       } else {
-        toast.error(
-          `Google sign-in failed: ${result.error || "Unknown error"}`,
-          {
-            className: "animate__animated animate__fadeInUp",
-          }
-        );
+        toast.error(`Google sign-in failed: ${result.error || "Unknown error"}`);
       }
     } finally {
       setLoadingGoogle(false);
@@ -54,21 +49,15 @@ const LoginPage = () => {
 
   const handleEmailAuth = async () => {
     if (isRegistering && !username) {
-      toast.error("Please enter a username.", {
-        className: "animate__animated animate__fadeInUp",
-      });
+      toast.error("Please enter a username.");
       return;
     }
     if (!email || !password) {
-      toast.error("Please fill in both email and password.", {
-        className: "animate__animated animate__fadeInUp",
-      });
+      toast.error("Please fill in both email and password.");
       return;
     }
     if (password.length < 6) {
-      toast.error("Password must be at least 6 characters.", {
-        className: "animate__animated animate__fadeInUp",
-      });
+      toast.error("Password must be at least 6 characters.");
       return;
     }
     try {
@@ -83,17 +72,13 @@ const LoginPage = () => {
         const message = isRegistering
           ? `Account created for ${result.user.email}!`
           : `Welcome back, ${result.user.email}!`;
-        toast.success(message, {
-          className: "animate__animated animate__fadeInUp",
-        });
+        toast.success(message);
         router.push("/");
       } else {
         const errorMessage = isRegistering
           ? `Registration failed`
           : `Login failed`;
-        toast.error(errorMessage, {
-          className: "animate__animated animate__fadeInUp",
-        });
+        toast.error(errorMessage);
       }
     } finally {
       setLoadingEmailAuth(false);
@@ -132,7 +117,7 @@ const LoginPage = () => {
                 value={email}
                 onChange={(e) => setEmail(e.target.value)}
                 placeholder="Email"
-                className="w-full  rounded-lg border border-gray-300 bg-white px-8 pb-2 pt-2 text-sm text-gray-900 placeholder-gray-500 focus:z-10 focus:border-indigo-500 focus:outline-none focus:ring-indigo-500 sm:text-sm"
+                className="w-full rounded-lg border border-gray-300 bg-white px-8 pb-2 pt-2 text-sm text-gray-900 placeholder-gray-500 focus:z-10 focus:border-indigo-500 focus:outline-none focus:ring-indigo-500 sm:text-sm"
               />
             </div>
             <div className="relative flex items-center">
@@ -161,7 +146,7 @@ const LoginPage = () => {
               type="button"
               onClick={handleEmailAuth}
               disabled={loadingEmailAuth || loadingGoogle}
-              className="group relative w-full flex justify-center py-2 px-4 border border-transparent text-sm  rounded-lg text-white font-bold bg-indigo-600 hover:bg-indigo-700 focus:outline-none "
+              className="group relative w-full flex justify-center py-2 px-4 border border-transparent text-sm rounded-lg text-white font-bold bg-indigo-600 hover:bg-indigo-700 focus:outline-none "
             >
               {loadingEmailAuth
                 ? isRegistering
@@ -181,7 +166,7 @@ const LoginPage = () => {
               type="button"
               onClick={handleGoogleLogin}
               disabled={loadingEmailAuth || loadingGoogle}
-              className="group relative w-full flex justify-center font-bold items-center py-2 px-4 border border-gray-300 text-sm  rounded-lg text-gray-700 bg-white hover:bg-gray-50 "
+              className="group relative w-full flex justify-center font-bold items-center py-2 px-4 border border-gray-300 text-sm rounded-lg text-gray-700 bg-white hover:bg-gray-50 "
             >
               <Image
                 src="/images/google-icon.png"
