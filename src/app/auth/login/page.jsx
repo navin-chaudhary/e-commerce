@@ -1,16 +1,18 @@
 "use client";
+
 import React, { useState, useEffect } from "react";
 import { Toaster, toast } from "sonner";
-import {
-  signInWithGoogle,
-  loginWithEmail,
-  registerWithEmail,
-} from "../utils/firebase";
 import { useRouter } from "next/navigation";
 import Navbar from "@/app/components/Navbar";
 import Footer from "@/app/components/Footer";
 import { Eye, EyeOff, User, Mail, Lock } from "lucide-react";
 import Image from "next/image";
+import { 
+  signInWithGoogle, 
+  loginWithEmail, 
+  registerWithEmail,
+  initializeFirebase 
+} from "../utils/firebase";
 
 const LoginPage = () => {
   const [loadingEmailAuth, setLoadingEmailAuth] = useState(false);
@@ -24,30 +26,54 @@ const LoginPage = () => {
   const router = useRouter();
 
   useEffect(() => {
-    if (typeof window !== "undefined") {
-      const storedUser = localStorage.getItem("user");
-      if (storedUser) setUser(JSON.parse(storedUser));
+    try {
+      // Initialize Firebase when component mounts
+      initializeFirebase();
+      console.log("Firebase initialized successfully");
+      
+      // Check for existing user
+      if (typeof window !== "undefined") {
+        const storedUser = localStorage.getItem("user");
+        if (storedUser) {
+          setUser(JSON.parse(storedUser));
+          console.log("Found stored user:", storedUser);
+        }
+      }
+    } catch (error) {
+      console.error("Firebase initialization error:", error);
+      toast.error("Error initializing authentication service");
     }
   }, []);
 
   const handleGoogleLogin = async () => {
+    console.log("Starting Google login process...");
     try {
       setLoadingGoogle(true);
       const result = await signInWithGoogle();
-      if (result.success) {
+      console.log("Google login result:", result);
+
+      if (result?.success) {
         setUser(result.user);
         localStorage.setItem("user", JSON.stringify(result.user));
         toast.success(`Welcome, ${result.user.displayName || "user"}!`);
         router.push("/");
       } else {
-        toast.error(`Google sign-in failed: ${result.error || "Unknown error"}`);
+        console.error("Google login failed:", result?.error);
+        toast.error(`Login failed: ${result?.error || "Unknown error"}`);
       }
+    } catch (error) {
+      console.error("Google login error:", error);
+      toast.error(error?.message || "Failed to login with Google");
     } finally {
       setLoadingGoogle(false);
     }
   };
 
   const handleEmailAuth = async () => {
+    console.log("Starting email auth process...");
+    console.log("Mode:", isRegistering ? "register" : "login");
+    
+    // Validation
     if (isRegistering && !username) {
       toast.error("Please enter a username.");
       return;
@@ -60,13 +86,16 @@ const LoginPage = () => {
       toast.error("Password must be at least 6 characters.");
       return;
     }
+
     try {
       setLoadingEmailAuth(true);
       const result = isRegistering
-        ? await registerWithEmail(email, password)
+        ? await registerWithEmail(email, password, username)
         : await loginWithEmail(email, password);
 
-      if (result.success) {
+      console.log("Email auth result:", result);
+
+      if (result?.success) {
         setUser(result.user);
         localStorage.setItem("user", JSON.stringify(result.user));
         const message = isRegistering
@@ -75,11 +104,12 @@ const LoginPage = () => {
         toast.success(message);
         router.push("/");
       } else {
-        const errorMessage = isRegistering
-          ? `Registration failed`
-          : `Login failed`;
-        toast.error(errorMessage);
+        console.error("Email auth failed:", result?.error);
+        toast.error(result?.error || "Authentication failed");
       }
+    } catch (error) {
+      console.error("Email auth error:", error);
+      toast.error(error?.message || "Authentication failed");
     } finally {
       setLoadingEmailAuth(false);
     }
@@ -133,10 +163,7 @@ const LoginPage = () => {
               />
               <button
                 type="button"
-                onClick={(e) => {
-                  e.preventDefault();
-                  setShowPassword(!showPassword);
-                }}
+                onClick={() => setShowPassword(!showPassword)}
                 className="absolute inset-y-0 right-0 z-20 flex items-center pr-3 text-gray-500"
               >
                 {showPassword ? <EyeOff size={20} /> : <Eye size={20} />}
@@ -145,28 +172,28 @@ const LoginPage = () => {
             <button
               type="button"
               onClick={handleEmailAuth}
-              disabled={loadingEmailAuth || loadingGoogle}
-              className="group relative w-full flex justify-center py-2 px-4 border border-transparent text-sm rounded-lg text-white font-bold bg-indigo-600 hover:bg-indigo-700 focus:outline-none "
+              disabled={loadingEmailAuth}
+              className="group relative w-full flex justify-center py-2 px-4 border border-transparent text-sm rounded-lg text-white font-bold bg-indigo-600 hover:bg-indigo-700 focus:outline-none disabled:opacity-50"
             >
-              {loadingEmailAuth
-                ? isRegistering
-                  ? "Register"
-                  : "Login"
-                : isRegistering
-                ? "Register"
-                : "Login"}
+              {loadingEmailAuth ? (
+                isRegistering ? "Creating Account..." : "Signing In..."
+              ) : isRegistering ? (
+                "Create Account"
+              ) : (
+                "Sign In"
+              )}
             </button>
             <div className="flex items-center justify-center space-x-2">
               <hr className="flex-grow border-gray-400 border-t" />
-              <span className="text-gray-500">or continue with</span>
+              <span className="text-gray-500">or</span>
               <hr className="flex-grow border-gray-400 border-t" />
             </div>
 
             <button
               type="button"
               onClick={handleGoogleLogin}
-              disabled={loadingEmailAuth || loadingGoogle}
-              className="group relative w-full flex justify-center font-bold items-center py-2 px-4 border border-gray-300 text-sm rounded-lg text-gray-700 bg-white hover:bg-gray-50 "
+              disabled={loadingGoogle}
+              className="group relative w-full flex justify-center font-bold items-center py-2 px-4 border border-gray-300 text-sm rounded-lg text-gray-700 bg-white hover:bg-gray-50 disabled:opacity-50"
             >
               <Image
                 src="/images/google-icon.png"
@@ -179,9 +206,7 @@ const LoginPage = () => {
             </button>
 
             <p className="mt-6 text-center text-sm text-gray-600">
-              {isRegistering
-                ? "Already have an account?"
-                : "Don't have an account?"}{" "}
+              {isRegistering ? "Already have an account?" : "Don't have an account?"}{" "}
               <button
                 onClick={() => setIsRegistering(!isRegistering)}
                 className="font-medium text-indigo-600 hover:text-indigo-500"
