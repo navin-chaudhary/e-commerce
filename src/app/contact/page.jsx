@@ -4,15 +4,9 @@ import { Toaster, toast } from "sonner";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
-<<<<<<< HEAD
 import Footer from "../../components/custom/Footer";
 import Image from "next/image";
-import Navbar from "@/components/custom/Navbar";
-=======
 import Navbar from "../components/Navbar";
-import Footer from "../components/Footer";
-import Image from "next/image";
->>>>>>> f83fca713b9320355823cd59c89a963b88610e9e
 
 const ContactForm = () => {
   const [formData, setFormData] = useState({
@@ -89,11 +83,7 @@ const ContactForm = () => {
   };
   return (
     <main className="bg-white min-h-screen">
-<<<<<<< HEAD
-      <Navbar/>
-=======
       <Navbar />
->>>>>>> f83fca713b9320355823cd59c89a963b88610e9e
       <div className="flex items-center justify-center py-12 px-2">
         <div className="flex flex-col md:flex-row max-w-4xl gap-2 md:gap-4 w-full">
           <div className="hidden md:block w-1/2 pr-4 ">
@@ -124,12 +114,8 @@ const ContactForm = () => {
                   value={formData.name}
                   onChange={handleInputChange}
                   required
-<<<<<<< HEAD
                   placeholder="Enter Your Name"
                   className="contact-form-input bg-white text-black"
-=======
-                  className="contact-form-input bg-white"
->>>>>>> f83fca713b9320355823cd59c89a963b88610e9e
                 />
               </div>
               <div>
@@ -146,12 +132,8 @@ const ContactForm = () => {
                   value={formData.email}
                   onChange={handleInputChange}
                   required
-<<<<<<< HEAD
                   placeholder="Enter Your Email"
                   className="contact-form-input bg-white text-black"
-=======
-                  className="contact-form-input bg-white"
->>>>>>> f83fca713b9320355823cd59c89a963b88610e9e
                 />
               </div>
 
@@ -169,12 +151,8 @@ const ContactForm = () => {
                   onChange={handleInputChange}
                   rows={5}
                   required
-<<<<<<< HEAD
                   placeholder="Enter Your Message"
                   className="contact-form-textarea bg-white text-black"
-=======
-                  className="contact-form-textarea bg-white"
->>>>>>> f83fca713b9320355823cd59c89a963b88610e9e
                 />
               </div>
               <Button

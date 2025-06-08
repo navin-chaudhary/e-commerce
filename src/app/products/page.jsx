@@ -2,28 +2,17 @@
 import { useState, useEffect } from "react";
 import { Heart } from "lucide-react";
 import Image from "next/image";
-<<<<<<< HEAD
 import Footer from "../../components/custom/Footer";
 import { useCart } from "../context/CartContext";
 import { Toaster, toast } from 'sonner';
 import Navbar from "@/components/custom/Navbar";
-=======
-import Navbar from "../components/Navbar";
-import Footer from "../components/Footer";
-import { useCart } from "../context/CartContext";
-import { Toaster, toast } from 'sonner';
->>>>>>> f83fca713b9320355823cd59c89a963b88610e9e
 
 const Products = () => {
   const [products, setProducts] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
   const [favorites, setFavorites] = useState(new Set());
-<<<<<<< HEAD
-  const { addToCart, cartItems, addToFavorites, favoriteItems } = useCart();
-=======
   const { addToCart, cartItems, addToFavorites, removeFavorite, favoriteItems } = useCart();
->>>>>>> f83fca713b9320355823cd59c89a963b88610e9e
 
   useEffect(() => {
     if (favoriteItems) {
@@ -204,11 +193,8 @@ const Products = () => {
 
   return (
     <>
-<<<<<<< HEAD
       <Navbar/>
-=======
-      <Navbar />
->>>>>>> f83fca713b9320355823cd59c89a963b88610e9e
+
       <div className="w-full bg-white pb-4 h-full">
       <main className="max-w-[1380px] mx-auto px-4 sm:px-6 lg:px-8 bg-white text-black min-h-screen">
         <div className="flex justify-center items-center mb-8 pt-8">

@@ -1,13 +1,8 @@
 'use client'
 import { useState } from 'react';
 import Head from 'next/head';
-<<<<<<< HEAD
 import Navbar from "@/components/custom/Navbar";
 import Footer from '../../components/custom/Footer';
-=======
-import Navbar from '../components/Navbar';
-import Footer from '../components/Footer';
->>>>>>> f83fca713b9320355823cd59c89a963b88610e9e
 import Image from 'next/image';
 
 

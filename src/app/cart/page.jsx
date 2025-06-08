@@ -3,19 +3,15 @@ import React, { useState } from "react";
 import { Minus, Plus, Trash2 } from "lucide-react";
 import Image from "next/image";
 import { useCart } from "../context/CartContext";
-<<<<<<< HEAD
 import Footer from "../../components/custom/Footer";
 import { Toaster, toast } from 'sonner';
-import Navbar from "@/components/custom/Navbar";
-=======
 import Navbar from "../components/Navbar";
-import Footer from "../components/Footer";
-import { Toaster, toast } from 'sonner';
->>>>>>> f83fca713b9320355823cd59c89a963b88610e9e
+import getStripe from "../../lib/stripe-client.js";
 
 const CartClient = () => {
   const { cartItems = [], removeFromCart, updateQuantity } = useCart();
   const [couponCode, setCouponCode] = useState("");
+  const [isCheckoutLoading, setIsCheckoutLoading] = useState(false);
 
   // Toast configuration object for consistent styling
   const toastConfig = {
@@ -76,7 +72,7 @@ const CartClient = () => {
     }, 1500);
   };
 
-  const handleCheckout = () => {
+  const handleCheckout = async () => {
     if (cartItems.length === 0) {
       toast.error("Your cart is empty", {
         ...toastConfig,
@@ -84,21 +80,59 @@ const CartClient = () => {
       });
       return;
     }
+
+    setIsCheckoutLoading(true);
     
-    toast.success("Proceeding to checkout...", {
-      ...toastConfig,
-      icon: "→",
-    });
-    // Add your checkout logic here
+    try {
+      toast.info("Preparing checkout...", {
+        ...toastConfig,
+        icon: "⌛",
+      });
+
+      // Create checkout session
+      const response = await fetch('/api/checkout', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          items: cartItems,
+        }),
+      });
+
+      const data = await response.json();
+
+      if (!response.ok) {
+        throw new Error(data.error || 'Something went wrong');
+      }
+
+      // Redirect to Stripe Checkout
+      const stripe = await getStripe();
+      const { error } = await stripe.redirectToCheckout({
+        sessionId: data.sessionId,
+      });
+
+      if (error) {
+        console.error('Stripe redirect error:', error);
+        toast.error("Checkout failed. Please try again.", {
+          ...toastConfig,
+          icon: "×",
+        });
+      }
+    } catch (error) {
+      console.error('Checkout error:', error);
+      toast.error(error.message || "Checkout failed. Please try again.", {
+        ...toastConfig,
+        icon: "×",
+      });
+    } finally {
+      setIsCheckoutLoading(false);
+    }
   };
 
   return (
     <div className="bg-white min-h-screen">
-<<<<<<< HEAD
-      <Navbar/>
-=======
       <Navbar />
->>>>>>> f83fca713b9320355823cd59c89a963b88610e9e
       <div className="w-full">
         <div className="max-w-[1380px] mx-auto px-4 sm:px-6 lg:px-8">
           <div className="space-y-6">
@@ -305,9 +339,14 @@ const CartClient = () => {
                   </div>
                   <button
                     onClick={handleCheckout}
-                    className="mt-4 bg-teal-500 text-white px-4 py-2 rounded-md hover:bg-teal-600 transition-colors w-full"
+                    disabled={isCheckoutLoading}
+                    className={`mt-4 px-4 py-2 rounded-md w-full transition-colors ${
+                      isCheckoutLoading
+                        ? 'bg-gray-400 cursor-not-allowed'
+                        : 'bg-teal-500 hover:bg-teal-600'
+                    } text-white`}
                   >
-                    Proceed to Checkout
+                    {isCheckoutLoading ? 'Processing...' : 'Proceed to Checkout'}
                   </button>
                 </div>
               </div>

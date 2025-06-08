@@ -7,11 +7,6 @@ const CartContext = createContext();
 export const CartProvider = ({ children }) => {
   const [cartItems, setCartItems] = useState([]);
   const [favorites, setFavorites] = useState([]);
-
-<<<<<<< HEAD
-=======
-  // Load cart items from localStorage on initial render
->>>>>>> f83fca713b9320355823cd59c89a963b88610e9e
   useEffect(() => {
     const savedCart = localStorage.getItem('cartItems');
     if (savedCart) {
