@@ -3,9 +3,15 @@ import React, { useState } from "react";
 import { Minus, Plus, Trash2 } from "lucide-react";
 import Image from "next/image";
 import { useCart } from "../context/CartContext";
+<<<<<<< HEAD
 import Footer from "../../components/custom/Footer";
 import { Toaster, toast } from 'sonner';
 import Navbar from "@/components/custom/Navbar";
+=======
+import Navbar from "../components/Navbar";
+import Footer from "../components/Footer";
+import { Toaster, toast } from 'sonner';
+>>>>>>> f83fca713b9320355823cd59c89a963b88610e9e
 
 const CartClient = () => {
   const { cartItems = [], removeFromCart, updateQuantity } = useCart();
@@ -88,7 +94,11 @@ const CartClient = () => {
 
   return (
     <div className="bg-white min-h-screen">
+<<<<<<< HEAD
       <Navbar/>
+=======
+      <Navbar />
+>>>>>>> f83fca713b9320355823cd59c89a963b88610e9e
       <div className="w-full">
         <div className="max-w-[1380px] mx-auto px-4 sm:px-6 lg:px-8">
           <div className="space-y-6">

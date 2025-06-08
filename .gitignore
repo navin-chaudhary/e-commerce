@@ -3,7 +3,11 @@
 # dependencies
 /node_modules
 /.pnp
+<<<<<<< HEAD
 .pnp.*  
+=======
+.pnp.*
+>>>>>>> f83fca713b9320355823cd59c89a963b88610e9e
 .yarn/*
 !.yarn/patches
 !.yarn/plugins

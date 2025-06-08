@@ -3,7 +3,12 @@
 import React, { useState, useEffect } from "react";
 import { Toaster, toast } from "sonner";
 import { useRouter } from "next/navigation";
+<<<<<<< HEAD
 import Footer from "@/components/custom/Footer";
+=======
+import Navbar from "@/app/components/Navbar";
+import Footer from "@/app/components/Footer";
+>>>>>>> f83fca713b9320355823cd59c89a963b88610e9e
 import { Eye, EyeOff, User, Mail, Lock } from "lucide-react";
 import Image from "next/image";
 import { 
@@ -13,7 +18,10 @@ import {
   initializeFirebase,
   
 } from "../utils/firebase";
+<<<<<<< HEAD
 import Navbar from "@/components/custom/Navbar";
+=======
+>>>>>>> f83fca713b9320355823cd59c89a963b88610e9e
 const LoginPage = () => {
   const [loadingEmailAuth, setLoadingEmailAuth] = useState(false);
   const [loadingGoogle, setLoadingGoogle] = useState(false);
@@ -27,7 +35,13 @@ const LoginPage = () => {
 
   useEffect(() => {
     try {
+<<<<<<< HEAD
       initializeFirebase();         
+=======
+      initializeFirebase();
+      
+      
+>>>>>>> f83fca713b9320355823cd59c89a963b88610e9e
      
       if (typeof window !== "undefined") {
         const storedUser = localStorage.getItem("user");
@@ -105,7 +119,11 @@ const LoginPage = () => {
 
   return (
     <div className="flex flex-col min-h-screen bg-white">
+<<<<<<< HEAD
       <Navbar/>
+=======
+      <Navbar />
+>>>>>>> f83fca713b9320355823cd59c89a963b88610e9e
       <main className="flex-grow py-12 px-4 sm:px-6 lg:px-8">
         <div className="max-w-md w-full mx-auto border p-5 border-gray-400 rounded-md space-y-8 shadow-lg bg-gray-50">
           <h2 className="mt-6 text-center text-3xl font-bold text-gray-900">
