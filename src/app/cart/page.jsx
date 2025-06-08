@@ -1,6 +1,6 @@
 "use client";
 import React, { useState } from "react";
-import { Minus, Plus, Trash2 } from "lucide-react";
+import { Minus, Plus, Trash2, Tag, X } from "lucide-react";
 import Image from "next/image";
 import { useCart } from "../context/CartContext";
 import Footer from "../../components/custom/Footer";
@@ -11,7 +11,10 @@ import getStripe from "../../lib/stripe-client.js";
 const CartClient = () => {
   const { cartItems = [], removeFromCart, updateQuantity } = useCart();
   const [couponCode, setCouponCode] = useState("");
+  const [appliedCoupon, setAppliedCoupon] = useState(null);
+  const [discountAmount, setDiscountAmount] = useState(0);
   const [isCheckoutLoading, setIsCheckoutLoading] = useState(false);
+  const [isCouponLoading, setIsCouponLoading] = useState(false);
 
   // Toast configuration object for consistent styling
   const toastConfig = {
@@ -24,6 +27,11 @@ const CartClient = () => {
       (total, item) => total + (Number(item?.price) || 0) * (item?.quantity || 1),
       0
     );
+  };
+
+  const calculateFinalTotal = () => {
+    const subtotal = calculateSubTotal();
+    return Math.max(0, subtotal - discountAmount);
   };
 
   const formatPrice = (price) => {
@@ -47,88 +55,244 @@ const CartClient = () => {
       ...toastConfig,
       icon: "✓",
     });
-  };
 
-  const handleApplyCoupon = () => {
-    if (!couponCode.trim()) {
-      toast.error("Please enter a coupon code", {
-        ...toastConfig,
-        icon: "!",
-      });
-      return;
+    // Revalidate coupon if applied
+    if (appliedCoupon) {
+      validateCouponCode(appliedCoupon, true);
     }
-    
-    toast.info("Processing coupon code...", {
-      ...toastConfig,
-      icon: "⌛",
-    });
-    
-    // Simulating API call delay
-    setTimeout(() => {
-      toast.error("Invalid coupon code", {
-        ...toastConfig,
-        icon: "×",
-      });
-    }, 1500);
   };
 
-  const handleCheckout = async () => {
-    if (cartItems.length === 0) {
-      toast.error("Your cart is empty", {
-        ...toastConfig,
-        icon: "!",
-      });
+  const validateCouponCode = async (code = couponCode, silent = false) => {
+    if (!code.trim()) {
+      if (!silent) {
+        toast.error("Please enter a coupon code", {
+          ...toastConfig,
+          icon: "!",
+        });
+      }
       return;
     }
 
-    setIsCheckoutLoading(true);
+    const subtotal = calculateSubTotal();
+    if (subtotal <= 0) {
+      if (!silent) {
+        toast.error("Add items to cart before applying coupon", {
+          ...toastConfig,
+          icon: "!",
+        });
+      }
+      return;
+    }
+
+    setIsCouponLoading(true);
     
     try {
-      toast.info("Preparing checkout...", {
-        ...toastConfig,
-        icon: "⌛",
-      });
-
-      // Create checkout session
-      const response = await fetch('/api/checkout', {
+      const response = await fetch('/api/validate-coupon', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
         },
         body: JSON.stringify({
-          items: cartItems,
+          couponCode: code,
+          subtotal: subtotal
         }),
       });
 
       const data = await response.json();
 
-      if (!response.ok) {
-        throw new Error(data.error || 'Something went wrong');
+      if (response.ok) {
+        setAppliedCoupon(data.couponCode);
+        setDiscountAmount(data.discountAmount);
+        setCouponCode("");
+        
+        if (!silent) {
+          toast.success(`Coupon applied! Saved $${data.discountAmount.toFixed(2)}`, {
+            ...toastConfig,
+            icon: "🎉",
+          });
+        }
+      } else {
+        if (!silent) {
+          toast.error(data.error || "Invalid coupon code", {
+            ...toastConfig,
+            icon: "×",
+          });
+        }
+        // Reset discount if validation fails
+        if (silent) {
+          setAppliedCoupon(null);
+          setDiscountAmount(0);
+        }
       }
-
-      // Redirect to Stripe Checkout
-      const stripe = await getStripe();
-      const { error } = await stripe.redirectToCheckout({
-        sessionId: data.sessionId,
-      });
-
-      if (error) {
-        console.error('Stripe redirect error:', error);
-        toast.error("Checkout failed. Please try again.", {
+    } catch (error) {
+      console.error('Coupon validation error:', error);
+      if (!silent) {
+        toast.error("Failed to validate coupon code", {
           ...toastConfig,
           icon: "×",
         });
       }
-    } catch (error) {
-      console.error('Checkout error:', error);
-      toast.error(error.message || "Checkout failed. Please try again.", {
-        ...toastConfig,
-        icon: "×",
-      });
     } finally {
-      setIsCheckoutLoading(false);
+      setIsCouponLoading(false);
     }
   };
+
+  const handleApplyCoupon = () => {
+    validateCouponCode();
+  };
+
+  const handleRemoveCoupon = () => {
+    setAppliedCoupon(null);
+    setDiscountAmount(0);
+    setCouponCode("");
+    
+    toast.info("Coupon removed", {
+      ...toastConfig,
+      icon: "ℹ",
+    });
+  };
+  const debugCartData = () => {
+  console.log('=== CART DEBUG INFO ===');
+  cartItems.forEach((item, index) => {
+    console.log(`Item ${index + 1}:`, {
+      id: item.id,
+      title: item.title,
+      price: item.price,
+      priceType: typeof item.price,
+      quantity: item.quantity,
+      quantityType: typeof item.quantity,
+      isValidPrice: !isNaN(parseFloat(item.price)) && parseFloat(item.price) > 0,
+      isValidQuantity: !isNaN(parseInt(item.quantity)) && parseInt(item.quantity) > 0,
+    });
+  });
+  
+  console.log('Subtotal:', calculateSubTotal());
+  console.log('Applied coupon:', appliedCoupon);
+  console.log('Discount amount:', discountAmount);
+  console.log('Final total:', calculateFinalTotal());
+  console.log('=== END DEBUG INFO ===');
+};
+
+ const handleCheckout = async () => {
+   debugCartData();
+  if (cartItems.length === 0) {
+    toast.error("Your cart is empty", {
+      ...toastConfig,
+      icon: "!",
+    });
+    return;
+  }
+
+  setIsCheckoutLoading(true);
+  
+  try {
+    console.log('=== CHECKOUT DEBUG START ===');
+    console.log('Cart items:', cartItems);
+    console.log('Applied coupon:', appliedCoupon);
+    console.log('Discount amount:', discountAmount);
+    console.log('Subtotal:', calculateSubTotal());
+    console.log('Final total:', calculateFinalTotal());
+
+    // Validate cart items before sending
+    const validItems = cartItems.filter(item => {
+      const isValid = item && 
+                     item.title && 
+                     item.price && 
+                     item.price > 0 && 
+                     item.quantity && 
+                     item.quantity > 0;
+      
+      if (!isValid) {
+        console.error('Invalid item found:', item);
+      }
+      
+      return isValid;
+    });
+
+    console.log('Valid items:', validItems.length, 'of', cartItems.length);
+
+    if (validItems.length === 0) {
+      throw new Error('No valid items in cart');
+    }
+
+    toast.info("Preparing checkout...", {
+      ...toastConfig,
+      icon: "⌛",
+    });
+
+    // Prepare request payload
+    const payload = {
+      items: validItems.map(item => ({
+        id: item.id,
+        title: item.title,
+        description: item.description || '',
+        price: Number(item.price),
+        quantity: Number(item.quantity),
+        image: item.image || ''
+      })),
+      couponCode: appliedCoupon || ''
+    };
+
+    console.log('Sending payload:', payload);
+
+    // Create checkout session
+    const response = await fetch('/api/checkout-simple-fix', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify(payload),
+    });
+
+    console.log('Response status:', response.status);
+    console.log('Response headers:', Object.fromEntries(response.headers.entries()));
+
+    const data = await response.json();
+    console.log('Response data:', data);
+
+    if (!response.ok) {
+      console.error('Checkout API error:', data);
+      throw new Error(data.error || `HTTP ${response.status}: ${data.details || 'Unknown error'}`);
+    }
+
+    if (!data.sessionId) {
+      throw new Error('No session ID received from server');
+    }
+
+    console.log('Redirecting to Stripe with session ID:', data.sessionId);
+
+    // Redirect to Stripe Checkout
+    const stripe = await getStripe();
+    
+    if (!stripe) {
+      throw new Error('Failed to load Stripe');
+    }
+
+    const { error } = await stripe.redirectToCheckout({
+      sessionId: data.sessionId,
+    });
+
+    if (error) {
+      console.error('Stripe redirect error:', error);
+      throw new Error(`Stripe error: ${error.message}`);
+    }
+
+  } catch (error) {
+    console.error('=== CHECKOUT ERROR ===');
+    console.error('Error type:', error.constructor.name);
+    console.error('Error message:', error.message);
+    console.error('Error stack:', error.stack);
+    console.log('=== CHECKOUT DEBUG END ===');
+    
+    toast.error(error.message || "Checkout failed. Please try again.", {
+      ...toastConfig,
+      icon: "×",
+    });
+  } finally {
+    setIsCheckoutLoading(false);
+  }
+};
+
 
   return (
     <div className="bg-white min-h-screen">
@@ -307,20 +471,59 @@ const CartClient = () => {
                     Discount Codes
                   </h3>
                   <p className="text-black">Enter your coupon code if you have one</p>
-                  <div className="flex flex-col sm:flex-row gap-3">
-                    <input
-                      type="text"
-                      className="flex-1 border rounded-md p-2 text-black"
-                      value={couponCode}
-                      onChange={(e) => setCouponCode(e.target.value)}
-                      placeholder="Coupon Code"
-                    />
-                    <button
-                      onClick={handleApplyCoupon}
-                      className="bg-teal-500 text-white px-4 py-2 rounded-md hover:bg-teal-600 transition-colors"
-                    >
-                      Apply
-                    </button>
+                  
+                  {/* Applied Coupon Display */}
+                  {appliedCoupon && (
+                    <div className="bg-green-50 border border-green-200 rounded-md p-3 mb-4">
+                      <div className="flex items-center justify-between">
+                        <div className="flex items-center">
+                          <Tag className="w-4 h-4 text-green-600 mr-2" />
+                          <span className="text-green-800 font-medium">{appliedCoupon}</span>
+                          <span className="text-green-600 ml-2">(-${formatPrice(discountAmount)})</span>
+                        </div>
+                        <button
+                          onClick={handleRemoveCoupon}
+                          className="text-green-600 hover:text-green-800"
+                        >
+                          <X size={16} />
+                        </button>
+                      </div>
+                    </div>
+                  )}
+
+                  {/* Coupon Input */}
+                  {!appliedCoupon && (
+                    <div className="flex flex-col sm:flex-row gap-3">
+                      <input
+                        type="text"
+                        className="flex-1 border rounded-md p-2 text-black uppercase"
+                        value={couponCode}
+                        onChange={(e) => setCouponCode(e.target.value.toUpperCase())}
+                        placeholder="Enter coupon code (e.g., WELCOME10)"
+                        disabled={isCouponLoading}
+                      />
+                      <button
+                        onClick={handleApplyCoupon}
+                        disabled={isCouponLoading || !couponCode.trim()}
+                        className={`px-4 py-2 rounded-md transition-colors ${
+                          isCouponLoading || !couponCode.trim()
+                            ? 'bg-gray-400 cursor-not-allowed'
+                            : 'bg-teal-500 hover:bg-teal-600'
+                        } text-white`}
+                      >
+                        {isCouponLoading ? 'Checking...' : 'Apply'}
+                      </button>
+                    </div>
+                  )}
+
+                  {/* Available Coupons Hint */}
+                  <div className="text-sm text-gray-600 mt-2">
+                    <p className="font-medium mb-1">Try these codes:</p>
+                    <div className="flex flex-wrap gap-2">
+                      <span className="bg-gray-100 px-2 py-1 rounded text-xs">WELCOME10</span>
+                      <span className="bg-gray-100 px-2 py-1 rounded text-xs">SAVE20</span>
+                      <span className="bg-gray-100 px-2 py-1 rounded text-xs">FLAT15</span>
+                    </div>
                   </div>
                 </div>
 
@@ -329,14 +532,30 @@ const CartClient = () => {
                     <span>Subtotal</span>
                     <span>${formatPrice(calculateSubTotal())}</span>
                   </div>
+                  
+                  {appliedCoupon && discountAmount > 0 && (
+                    <div className="flex justify-between py-2 text-green-600">
+                      <span>Discount ({appliedCoupon})</span>
+                      <span>-${formatPrice(discountAmount)}</span>
+                    </div>
+                  )}
+                  
                   <div className="flex justify-between py-2">
                     <span className="text-black">Shipping</span>
                     <span className="text-teal-500">FREE</span>
                   </div>
+                  
                   <div className="flex justify-between font-bold py-2 border-b-2 border-black text-black">
                     <span>Grand Total</span>
-                    <span>${formatPrice(calculateSubTotal())}</span>
+                    <span>${formatPrice(calculateFinalTotal())}</span>
                   </div>
+                  
+                  {appliedCoupon && discountAmount > 0 && (
+                    <div className="text-center text-green-600 text-sm mt-2">
+                      You saved ${formatPrice(discountAmount)} with {appliedCoupon}!
+                    </div>
+                  )}
+                  
                   <button
                     onClick={handleCheckout}
                     disabled={isCheckoutLoading}
