@@ -267,7 +267,7 @@ const CartClient = () => {
         
         <h2 className="text-3xl font-bold text-gray-900 mb-4">Your Cart is Empty</h2>
         <p className="text-gray-600 text-lg mb-8 leading-relaxed">
-          Looks like you haven't added anything to your cart yet. Start exploring our amazing products!
+          Looks like you haven&apos;t added anything to your cart yet. Start exploring our amazing products!
         </p>
         
         <Link

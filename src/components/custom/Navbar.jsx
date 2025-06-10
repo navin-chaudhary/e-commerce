@@ -4,10 +4,10 @@ import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { Menu, X, ShoppingCart, User, Heart } from "lucide-react";
 import Image from "next/image";
+import { useCart } from "../../app/context/CartContext";
 import { useRouter } from "next/navigation";
-import { toast } from "sonner"; 
-import { useCart } from "@/app/context/CartContext";
-import { logoutUser } from "@/app/auth/utils/firebase";
+import { toast } from "sonner"; // Assuming you're using react-toastify
+import { logoutUser } from "../../app/auth/utils/firebase";
 
 const Navbar = () => {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
@@ -261,7 +261,7 @@ const Navbar = () => {
           </div>
         </div>
 
-      {isLogoutModalOpen && (
+{isLogoutModalOpen && (
   <div className="fixed inset-0 bg-black/60 backdrop-blur-sm flex items-center justify-center z-50 p-4 animate-in fade-in duration-200">
     <div 
       className="bg-white rounded-2xl shadow-2xl w-full max-w-md transform transition-all duration-300 animate-in zoom-in-95"
@@ -297,7 +297,7 @@ const Navbar = () => {
         
         <div className="bg-gray-50 rounded-xl p-4 border-l-4 border-orange-400">
           <p className="text-gray-700 text-sm leading-relaxed">
-            Are you sure you want to log out? You'll need to sign in again to access your account, 
+            Are you sure you want to log out? You&apos;ll need to sign in again to access your account, 
             saved items, and order history.
           </p>
         </div>
@@ -343,7 +343,7 @@ const Navbar = () => {
       <div className="px-6 pb-6">
         <div className="border-t border-gray-100 pt-4">
           <p className="text-xs text-gray-500 text-center">
-            For security reasons, you'll be automatically logged out after 30 minutes of inactivity
+            For security reasons, you&apos;ll be automatically logged out after 30 minutes of inactivity
           </p>
         </div>
       </div>

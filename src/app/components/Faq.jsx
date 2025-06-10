@@ -164,7 +164,7 @@ const FAQ = () => {
           
           <p className="text-xl text-gray-600 max-w-3xl mx-auto leading-relaxed">
             Find answers to common questions about our products, shipping, returns, and more. 
-            Can't find what you're looking for? Our support team is here to help!
+            Can&apos;t find what you&apos;re looking for? Our support team is here to help!
           </p>
         </div>
 

@@ -297,7 +297,7 @@ const Navbar = () => {
         
         <div className="bg-gray-50 rounded-xl p-4 border-l-4 border-orange-400">
           <p className="text-gray-700 text-sm leading-relaxed">
-            Are you sure you want to log out? You'll need to sign in again to access your account, 
+            Are you sure you want to log out? You&apos;ll need to sign in again to access your account, 
             saved items, and order history.
           </p>
         </div>
@@ -343,7 +343,7 @@ const Navbar = () => {
       <div className="px-6 pb-6">
         <div className="border-t border-gray-100 pt-4">
           <p className="text-xs text-gray-500 text-center">
-            For security reasons, you'll be automatically logged out after 30 minutes of inactivity
+            For security reasons, you&apos;ll be automatically logged out after 30 minutes of inactivity
           </p>
         </div>
       </div>
